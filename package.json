@@ -1,0 +1,30 @@
+{
+  "name": "real-time-chat",
+  "version": "1.0.0",
+  "description": "Build a simple chat applications using raw websockets in Node.js that supports the following features -",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/souravkumarpanda/real-time-chat-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/souravkumarpanda/real-time-chat-app/issues"
+  },
+  "homepage": "https://github.com/souravkumarpanda/real-time-chat-app#readme",
+  "dependencies": {
+    "websocket": "^1.0.34",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/websocket": "^1.0.10"
+  }
+}

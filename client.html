@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Chat Client</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        #chat-messages { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        input, button { margin: 10px 0; padding: 5px; }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="text" id="username" placeholder="Your Name">
+        <input type="text" id="room-id" placeholder="Room ID">
+        <button onclick="joinRoom()">Join Room</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div>
+        <input type="text" id="message-input" placeholder="Type your message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let socket;
+        let userId = generateUniqueId();
+        const chatMessages = document.getElementById('chat-messages');
+
+        function generateUniqueId() {
+            return 'user_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function joinRoom() {
+            const username = document.getElementById('username').value;
+            const roomId = document.getElementById('room-id').value;
+
+            socket = new WebSocket('ws://localhost:8080', 'echo-protocol');
+
+            socket.onopen = function() {
+                socket.send(JSON.stringify({
+                    type: "JOIN_ROOM",
+                    payload: {
+                        name: username,
+                        userId: userId,
+                        roomId: roomId
+                    }
+                }));
+                appendMessage('System', 'Joined room: ' + roomId);
+            };
+
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === "ADD_CHAT") {
+                    appendMessage(data.payload.name, data.payload.message);
+                }
+            };
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const roomId = document.getElementById('room-id').value;
+            const message = messageInput.value;
+
+            if (message && socket) {
+                socket.send(JSON.stringify({
+                    type: "SEND_MESSAGE",
+                    payload: {
+                        userId: userId,
+                        roomId: roomId,
+                        message: message
+                    }
+                }));
+                appendMessage('You', message);
+                messageInput.value = '';
+            }
+        }
+
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
